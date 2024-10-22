@@ -14,6 +14,7 @@ jobs:
   #  steps:
   #    - run: cat /etc/os-release
   im-skipped:
+    needs: No-container
     if: ${{ failure() }}
     runs-on: new-director
     steps:
