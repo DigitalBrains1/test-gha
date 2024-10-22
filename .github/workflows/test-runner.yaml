@@ -13,3 +13,8 @@ jobs:
   #  container: alpine
   #  steps:
   #    - run: cat /etc/os-release
+  im-skipped:
+    if: ${{ failure() }}
+    runs-on: new-director
+    steps:
+      - run: echo "I'm being run"
