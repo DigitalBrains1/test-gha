@@ -10,4 +10,4 @@ jobs:
       - name: Check base
         env:
           BASE_REF: ${{ github.base_ref }}
-        run: check-base.sh
+        run: ./check-base.sh
