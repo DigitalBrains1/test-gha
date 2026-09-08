@@ -10,4 +10,4 @@ jobs:
 
     steps:
       - name: Check
-      - run: exit 1
+        run: exit 1
