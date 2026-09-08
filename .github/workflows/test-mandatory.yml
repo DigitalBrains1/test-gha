@@ -1,0 +1,13 @@
+on:
+  pull_request:
+    branches: [main, 1.10]
+    paths:
+      - 'changelog/20*'
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check
+      - run: exit 1
