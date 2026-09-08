@@ -1,0 +1,13 @@
+name: Test base ref
+
+on: push
+
+jobs:
+  baseref:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check base
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: check-base.sh
