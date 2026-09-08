@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v6
+
       - name: Check base
         env:
           BASE_REF: ${{ github.base_ref }}
