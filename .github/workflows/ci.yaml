@@ -1,0 +1,203 @@
+name: CI
+
+on:
+  workflow_call:
+    inputs:
+      flavor:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      flavor:
+        required: true
+        type: choice
+        default: pr
+        options:
+          - pr
+          - nightly
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci-recipe:
+    name: Construct CI recipe
+    runs-on: ubuntu-latest
+    outputs:
+      recipe: ${{ steps.ci-recipe.outputs.recipe }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - id: ci-recipe
+        run:
+          .ci/ci-recipe.py ${{ inputs.flavor }}
+
+  cabal:
+    name: Cabal compilation test
+    runs-on: ubuntu-latest
+    needs: ci-recipe
+    strategy:
+      matrix: ${{ fromJSON(needs.ci-recipe.outputs.recipe.cabal.matrix }}
+    steps:
+      - run: |
+          echo This is the workflow file on main
+          echo "GITHUB_REF = $GITHUB_REF"
+          echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
+          echo
+          python3 -m json.tool $GITHUB_EVENT_PATH
+          export
+
+
+  packages_common:
+    name: Build Common (${{matrix.packageSet}})
+    runs-on: ubuntu-latest
+    needs: ci-recipe
+    strategy:
+      matrix: ${{ fromJSON(needs.ci-recipe.outputs.recipe.packages_common.matrix }}
+    steps:
+      - run: |
+          echo This is the workflow file on main
+          echo "GITHUB_REF = $GITHUB_REF"
+          echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
+          echo
+          python3 -m json.tool $GITHUB_EVENT_PATH
+          export
+
+
+  packages_other:
+    name: Build Common (${{matrix.packageSet}})
+    runs-on: ubuntu-latest
+    needs: ci-recipe
+    strategy:
+      matrix: ${{ fromJSON(needs.ci-recipe.outputs.recipe.packages_other.matrix }}
+    steps:
+      - run: |
+          echo This is the workflow file on main
+          echo "GITHUB_REF = $GITHUB_REF"
+          echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
+          echo
+          python3 -m json.tool $GITHUB_EVENT_PATH
+          export
+
+
+#  developer_shells:
+#    name: Build Developer Shells (${{matrix.ghc}})
+#    runs-on: self-hosted
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        ghc: [
+#          ghc9141,
+#          ghc9124,
+#          ghc9103,
+#          ghc984,
+#          ghc967
+#        ]
+#    needs: packages_common
+#    steps:
+#      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+#
+#      - name: Authenticate cache
+#        env:
+#          ATTIC_AUTH_TOKEN: ${{ secrets.ATTIC_SECRET }}
+#        run: .ci/attic-auth.sh
+#
+#      - name: Nix devShell ${{matrix.ghc}}
+#        run: nix build -L .#devShells.x86_64-linux.${{matrix.ghc}}
+#
+#      - name: Local cache
+#        run: attic push public $(nix path-info .#devShells.x86_64-linux.${{matrix.ghc}})
+#
+#      - name: Cachix
+#        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/1.10'
+#        env:
+#          CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_SECRET }}
+#        run: nix path-info .#devShells.x86_64-linux.${{matrix.ghc}} | cachix push clash-lang
+#
+#  packages_testsuite:
+#    name: Packaging clash-testsuite (${{matrix.packageSet}})
+#    runs-on: self-hosted
+#    strategy:
+#      # If caching fails for one package, then we are still interested in caching other packages
+#      fail-fast: false
+#      matrix:
+#        # See 'packages_common'
+#        packageSet: [
+#          clashPackages-ghc9141,
+#          clashPackages-ghc9124,
+#          clashPackages-ghc9103,
+#          clashPackages-ghc967,
+#          clashPackagesUpperBounds-ghc9141
+#        ]
+#    steps:
+#      - uses: actions/checkout@v6
+#
+#      - name: Authenticate cache
+#        env:
+#          ATTIC_AUTH_TOKEN: ${{ secrets.ATTIC_SECRET }}
+#        run: .ci/attic-auth.sh
+#
+#      - name: Build clash-testsuite
+#        run: |
+#          nix build -L .#${{matrix.packageSet}}.clash-testsuite-debug
+#          attic push public $(nix path-info .#${{matrix.packageSet}}.clash-testsuite-debug)
+#
+#      - name: Cachix
+#        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/1.10'
+#        env:
+#          CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_SECRET }}
+#        run: |
+#          nix path-info .#${{matrix.packageSet}}.clash-testsuite-debug | cachix push clash-lang
+#
+#  running_testsuite:
+#    name: Running clash-testsuite (${{matrix.packageSet}}, ${{matrix.hdl}})
+#    runs-on: self-hosted
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        hdl: [
+#          'VHDL',
+#          'Verilog',
+#          'SystemVerilog'
+#        ]
+#        # See 'packages_common'
+#        packageSet: [
+#          clashPackages-ghc9141,
+#          clashPackages-ghc9124,
+#          clashPackages-ghc9103,
+#          clashPackages-ghc967,
+#          clashPackagesUpperBounds-ghc9141
+#        ]
+#    needs: packages_testsuite
+#    steps:
+#      - uses: actions/checkout@v6
+#
+#      - name: Authenticate cache
+#        env:
+#          ATTIC_AUTH_TOKEN: ${{ secrets.ATTIC_SECRET }}
+#        run: .ci/attic-auth.sh
+#
+#      - name: Run clash-testsuite
+#        run: |
+#          nix run .#${{matrix.packageSet}}.clash-testsuite-debug -- -j$(.ci/effective_cpus.sh) --hide-successes -p .${{matrix.hdl}}. --no-vivado --no-modelsim
+#
+#  all:
+#    name: All on-push jobs finished
+#    if: ${{ !cancelled() }}
+#    needs: [
+#      cabal,
+#      cabal-haddock,
+#      stack,
+#      packages_common,
+#      packages_other,
+#      developer_shells,
+#      packages_testsuite,
+#      running_testsuite
+#    ]
+#    runs-on: ubuntu-slim
+#    steps:
+#      - uses: actions/checkout@v6
+#      - uses: clash-lang/all-jobs-ok@v2
+#        with:
+#          needs: ${{ toJSON(needs) }}
