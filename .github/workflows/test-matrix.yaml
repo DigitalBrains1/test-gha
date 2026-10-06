@@ -1,0 +1,13 @@
+name: Test matrix duplicates
+
+on: push
+
+jobs:
+  test_matrix:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        x: ["a", "b", "a"]
+    steps:
+      - run: echo ${{ matrix.x }}
