@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ci-recipe
     strategy:
-      matrix: ${{ fromJSON(needs.ci-recipe.outputs.recipe.cabal.matrix }}
+      matrix: ${{ fromJSON(needs.ci-recipe.outputs.recipe).cabal.matrix }}
     steps:
       - run: |
           echo This is the workflow file on main
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ci-recipe
     strategy:
-      matrix: ${{ fromJSON(needs.ci-recipe.outputs.recipe.packages_common.matrix }}
+      matrix: ${{ fromJSON(needs.ci-recipe.outputs.recipe).packages_common.matrix }}
     steps:
       - run: |
           echo This is the workflow file on main
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ci-recipe
     strategy:
-      matrix: ${{ fromJSON(needs.ci-recipe.outputs.recipe.packages_other.matrix }}
+      matrix: ${{ fromJSON(needs.ci-recipe.outputs.recipe).packages_other.matrix }}
     steps:
       - run: |
           echo This is the workflow file on main
