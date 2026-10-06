@@ -6,6 +6,13 @@ on:
       flavor:
         required: true
         type: string
+      event_name:
+        required: true
+        type: string
+      event:
+        required: true
+        type: string
+
   workflow_dispatch:
     inputs:
       flavor:
@@ -184,6 +191,25 @@ jobs:
 #        run: |
 #          nix run .#${{matrix.packageSet}}.clash-testsuite-debug -- -j$(.ci/effective_cpus.sh) --hide-successes -p .${{matrix.hdl}}. --no-vivado --no-modelsim
 #
+
+  qlog_entries:
+    name: "Check qlog entries"
+    # if: >
+    #   github.event.trigger == 'workflow_call' &&
+    #   inputs.event_name == 'pull_request'
+    if: inputs.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          set -x
+          echo This is the workflow file on main
+          echo "Event: ${{ inputs.event_name }}"
+          echo "GITHUB_REF = $GITHUB_REF"
+          echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
+          python3 -m json.tool $GITHUB_EVENT_PATH
+          python3 -m json.tool ${{ inputs.event }}
+          export
+
 #  all:
 #    name: All on-push jobs finished
 #    if: ${{ !cancelled() }}
