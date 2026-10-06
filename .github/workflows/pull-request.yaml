@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo This is the workflow file on main
+          echo This is the workflow file on 1.0
           echo "PR number: ${{ github.event.pull_request.number }}"
           echo "GITHUB_REF = $GITHUB_REF"
           echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
