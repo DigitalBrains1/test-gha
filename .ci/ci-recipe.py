@@ -103,6 +103,7 @@ recipes = {
         "packages_common": {
             "matrix": {
                 "ghc": all_nix_ghcs,
+                "variant": [""],
                 "include": [
                     upper_bounds,
                 ],
@@ -112,6 +113,7 @@ recipes = {
             "matrix": {
                 "package": other_packages,
                 "ghc": all_nix_ghcs,
+                "variant": [""],
                 "include": [
                     {"package": package} | upper_bounds for package in other_packages
                 ],
@@ -125,6 +127,7 @@ recipes = {
         "packages_testsuite": {
             "matrix": {
                 "ghc": base_nix_ghcs,
+                "variant": [""],
                 "include": [
                     upper_bounds,
                 ],
@@ -133,6 +136,7 @@ recipes = {
         "running_testsuite": {
             "matrix": {
                 "ghc": base_nix_ghcs,
+                "variant": [""],
                 "include": [
                     upper_bounds,
                 ],
