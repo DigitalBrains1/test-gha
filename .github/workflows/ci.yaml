@@ -37,7 +37,6 @@ jobs:
     name: "Build Common (${{ matrix.ghc }}\
            ${{ case(matrix.variant == '', '', ' ') }}${{ matrix.variant }})"
     runs-on: ubuntu-latest
-    needs: ci-recipe
     strategy:
       matrix: ${{ fromJSON(inputs.recipe).packages_common.matrix }}
     steps:
@@ -53,8 +52,8 @@ jobs:
   packages_other:
     name: "Build Other (${{matrix.ghc}}, ${{matrix.package}}\
            ${{ case(matrix.variant == '', '', ' ') }}${{ matrix.variant }})"
+    needs: packages_common
     runs-on: ubuntu-latest
-    needs: ci-recipe
     strategy:
       matrix: ${{ fromJSON(inputs.recipe).packages_other.matrix }}
     steps:
