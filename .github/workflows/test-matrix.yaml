@@ -8,6 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        x: ["a", "b", "a"]
+        x: ["a", "b"]
+        include:
+          - x: "c"
+          - x: "c"
+
     steps:
       - run: echo ${{ matrix.x }}
