@@ -23,8 +23,6 @@ jobs:
     # uses: DigitalBrains1/test-gha/.github/workflows/ci.yaml@${{ github.head_ref }}
     uses: $/.github/workflows/ci.yaml
     with:
-      event_name: ${{ github.event_name }}
-      event: ${{ toJSON(github.event) }}
       recipe: ${{ needs.ci-recipe.outputs.recipe }}
     secrets: inherit
 

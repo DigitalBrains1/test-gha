@@ -3,12 +3,6 @@ name: CI
 on:
   workflow_call:
     inputs:
-      event_name:
-        required: true
-        type: string
-      event:
-        required: true
-        type: string
       recipe:
         required: true
         type: string

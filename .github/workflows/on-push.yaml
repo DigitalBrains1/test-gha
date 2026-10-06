@@ -25,7 +25,5 @@ jobs:
     needs: ci-recipe
     uses: $/.github/workflows/ci.yaml
     with:
-      event_name: ${{ github.event_name }}
-      event: ${{ toJSON(github.event) }}
       recipe: ${{ needs.ci-recipe.outputs.recipe }}
     secrets: inherit
