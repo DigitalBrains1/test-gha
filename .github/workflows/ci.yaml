@@ -19,7 +19,7 @@ jobs:
       matrix: ${{ fromJSON(inputs.recipe).cabal.matrix }}
     steps:
       - run: |
-          echo This is the workflow file on main
+          echo This is the workflow file on test-pr
           echo "GITHUB_REF = $GITHUB_REF"
           echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
           echo
@@ -35,7 +35,7 @@ jobs:
       matrix: ${{ fromJSON(inputs.recipe).packages_common.matrix }}
     steps:
       - run: |
-          echo This is the workflow file on main
+          echo This is the workflow file on test-pr
           echo "GITHUB_REF = $GITHUB_REF"
           echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
           echo
@@ -52,7 +52,7 @@ jobs:
       matrix: ${{ fromJSON(inputs.recipe).packages_other.matrix }}
     steps:
       - run: |
-          echo This is the workflow file on main
+          echo This is the workflow file on test-pr
           echo "GITHUB_REF = $GITHUB_REF"
           echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
           echo
