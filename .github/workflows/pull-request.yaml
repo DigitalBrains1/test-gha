@@ -1,0 +1,42 @@
+name: PR
+
+on:
+  pull_request:
+
+jobs:
+  ci-recipe:
+    name: Construct CI recipe
+    runs-on: ubuntu-latest
+    outputs:
+      recipe: ${{ steps.ci-recipe.outputs.recipe }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - id: ci-recipe
+        run:
+          .ci/ci-recipe.py pr
+
+
+  pr:
+    name: PR
+    needs: ci-recipe
+    # uses: DigitalBrains1/test-gha/.github/workflows/ci.yaml@${{ github.head_ref }}
+    uses: $/.github/workflows/ci.yaml
+    with:
+      event_name: ${{ github.event_name }}
+      event: ${{ toJSON(github.event) }}
+      recipe: ${{ needs.ci-recipe.outputs.recipe }}
+    secrets: inherit
+
+
+  qlog_entries:
+    name: "Check qlog entries"
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo This is the workflow file on main
+          echo "PR number: ${{ github.event.pull_request.number }}"
+          echo "GITHUB_REF = $GITHUB_REF"
+          echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
+          python3 -m json.tool $GITHUB_EVENT_PATH
+          export

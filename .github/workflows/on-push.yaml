@@ -1,0 +1,31 @@
+name: On push
+
+on:
+  push:
+    branches:
+      - main
+      - "1.0"
+
+jobs:
+  ci-recipe:
+    name: Construct CI recipe
+    runs-on: ubuntu-latest
+    outputs:
+      recipe: ${{ steps.ci-recipe.outputs.recipe }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - id: ci-recipe
+        run:
+          .ci/ci-recipe.py pr
+
+
+  push:
+    name: Push
+    needs: ci-recipe
+    uses: $/.github/workflows/ci.yaml
+    with:
+      event_name: ${{ github.event_name }}
+      event: ${{ toJSON(github.event) }}
+      recipe: ${{ needs.ci-recipe.outputs.recipe }}
+    secrets: inherit

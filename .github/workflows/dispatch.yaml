@@ -1,0 +1,47 @@
+name: Dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      flavor:
+        required: true
+        type: choice
+        default: pr
+        options:
+          - pr
+          - nightly
+
+jobs:
+  ci-recipe:
+    name: Construct CI recipe
+    runs-on: ubuntu-latest
+    outputs:
+      recipe: ${{ steps.ci-recipe.outputs.recipe }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - id: ci-recipe
+        run:
+          .ci/ci-recipe.py ${{ inputs.flavor }}
+
+  dispatch:
+    name: Dispatch
+    needs: ci-recipe
+    # uses: DigitalBrains1/test-gha/.github/workflows/ci.yaml@${{ github.head_ref }}
+    uses: $/.github/workflows/ci.yaml
+    with:
+      event_name: ${{ github.event_name }}
+      event: ${{ toJSON(github.event) }}
+      recipe: ${{ needs.ci-recipe.outputs.recipe }}
+    secrets: inherit
+
+
+  trigger_push:
+    name: Trigger push
+    if: github.event_name == 'push'
+    uses: $/.github/workflows/ci.yaml
+    with:
+      flavor: pr
+      event_name: ${{ github.event_name }}
+      event: ${{ toJSON(github.event) }}
+    secrets: inherit

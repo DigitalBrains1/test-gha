@@ -3,49 +3,26 @@ name: CI
 on:
   workflow_call:
     inputs:
-      flavor:
-        required: true
-        type: string
       event_name:
         required: true
         type: string
       event:
         required: true
         type: string
-
-  workflow_dispatch:
-    inputs:
-      flavor:
+      recipe:
         required: true
-        type: choice
-        default: pr
-        options:
-          - pr
-          - nightly
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  ci-recipe:
-    name: Construct CI recipe
-    runs-on: ubuntu-latest
-    outputs:
-      recipe: ${{ steps.ci-recipe.outputs.recipe }}
-    steps:
-      - uses: actions/checkout@v6
-
-      - id: ci-recipe
-        run:
-          .ci/ci-recipe.py ${{ inputs.flavor }}
-
   cabal:
     name: Cabal compilation test
     runs-on: ubuntu-latest
-    needs: ci-recipe
     strategy:
-      matrix: ${{ fromJSON(needs.ci-recipe.outputs.recipe).cabal.matrix }}
+      matrix: ${{ fromJSON(inputs.recipe).cabal.matrix }}
     steps:
       - run: |
           echo This is the workflow file on main
@@ -62,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ci-recipe
     strategy:
-      matrix: ${{ fromJSON(needs.ci-recipe.outputs.recipe).packages_common.matrix }}
+      matrix: ${{ fromJSON(inputs.recipe).packages_common.matrix }}
     steps:
       - run: |
           echo This is the workflow file on main
@@ -79,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ci-recipe
     strategy:
-      matrix: ${{ fromJSON(needs.ci-recipe.outputs.recipe).packages_other.matrix }}
+      matrix: ${{ fromJSON(inputs.recipe).packages_other.matrix }}
     steps:
       - run: |
           echo This is the workflow file on main
@@ -191,25 +168,6 @@ jobs:
 #        run: |
 #          nix run .#${{matrix.packageSet}}.clash-testsuite-debug -- -j$(.ci/effective_cpus.sh) --hide-successes -p .${{matrix.hdl}}. --no-vivado --no-modelsim
 #
-
-  qlog_entries:
-    name: "Check qlog entries"
-    # if: >
-    #   github.event.trigger == 'workflow_call' &&
-    #   inputs.event_name == 'pull_request'
-    if: inputs.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          set -x
-          echo This is the workflow file on main
-          echo "Event: ${{ inputs.event_name }}"
-          echo "GITHUB_REF = $GITHUB_REF"
-          echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
-          python3 -m json.tool $GITHUB_EVENT_PATH
-          python3 -m json.tool ${{ inputs.event }}
-          export
-
 #  all:
 #    name: All on-push jobs finished
 #    if: ${{ !cancelled() }}
