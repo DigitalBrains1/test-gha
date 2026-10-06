@@ -24,8 +24,8 @@ jobs:
         run:
           .ci/ci-recipe.py ${{ inputs.flavor }}
 
-  dispatch:
-    name: Dispatch
+  ci:
+    name: CI
     needs: ci-recipe
     # uses: DigitalBrains1/test-gha/.github/workflows/ci.yaml@${{ github.head_ref }}
     uses: $/.github/workflows/ci.yaml

@@ -20,8 +20,8 @@ jobs:
           .ci/ci-recipe.py pr
 
 
-  push:
-    name: Push
+  ci:
+    name: CI
     needs: ci-recipe
     uses: $/.github/workflows/ci.yaml
     with:
