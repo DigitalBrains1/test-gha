@@ -37,7 +37,7 @@ def sort_recipe_lists(recipe):
     if isinstance(recipe, list):
         return nub_sort([sort_recipe_lists(e) for e in recipe])
     if isinstance(recipe, dict):
-        return { k: sort_recipe_lists(v) for k,v in recipe.items() }
+        return {k: sort_recipe_lists(v) for k, v in recipe.items()}
     return recipe
 
 
@@ -69,9 +69,9 @@ def combine(x, y):
 
 base_nix_ghcs = [
     "9141",
-#    "9124",
-#    "9103",
-#    "967",
+    #    "9124",
+    #    "9103",
+    #    "967",
 ]
 
 nightly_nix_ghcs = ["984"]
@@ -85,11 +85,11 @@ upper_bounds = {
 
 other_packages = [
     "clash-benchmark",
-#    "clash-lib-hedgehog",
-#    "clash-prelude-hedgehog",
-#    "clash-profiling",
-#    "clash-profiling-prepare",
-#    "clash-term",
+    #    "clash-lib-hedgehog",
+    #    "clash-prelude-hedgehog",
+    #    "clash-profiling",
+    #    "clash-profiling-prepare",
+    #    "clash-term",
 ]
 
 recipes = {
@@ -116,7 +116,7 @@ recipes = {
                 "ghc": all_nix_ghcs,
                 "variant": [""],
                 "include": [
-                    {"package": package} | upper_bounds for package in other_packages
+                    upper_bounds | {"package": package} for package in other_packages
                 ],
             },
         },
@@ -208,7 +208,10 @@ def main():
     except OSError as e:
         print(f"Failed to open $GITHUB_OUTPUT: {e}\n", file=sys.stderr)
     if out is None or len(sys.argv) != 2:
-        print("Invocation: GITHUB_OUTPUT=<file> .ci/ci-recipe.py <flavor>\n", file=sys.stderr)
+        print(
+            "Invocation: GITHUB_OUTPUT=<file> .ci/ci-recipe.py <flavor>\n",
+            file=sys.stderr,
+        )
         print(f"Flavors: {list(flavors.keys())}\n", file=sys.stderr)
         print("If an output file is undesired, just do", file=sys.stderr)
         print("GITHUB_OUTPUT=/dev/null .ci/ci-recipe.py <flavor>", file=sys.stderr)
