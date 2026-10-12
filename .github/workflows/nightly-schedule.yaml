@@ -2,9 +2,9 @@ name: Nightly schedule
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "40 10 * * *"
-      timezone: "Europe/Amsterdam"
+#  schedule:
+#    - cron: "40 10 * * *"
+#      timezone: "Europe/Amsterdam"
 
 jobs:
   schedule:
