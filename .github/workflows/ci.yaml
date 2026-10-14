@@ -95,8 +95,8 @@ jobs:
 #        run: nix path-info .#devShells.x86_64-linux.${{matrix.ghc}} | cachix push clash-lang
 #
   packages_testsuite:
-    name: Packaging clash-testsuite (${{matrix.packageSet}})
-    runs-on: self-hosted
+    name: "Packaging clash-testsuite (${{ matrix.ghc }}\
+           ${{ case(matrix.variant == '', '', ' ') }}${{ matrix.variant }})"
     strategy:
       # If caching fails for one package, then we are still interested in caching other packages
       fail-fast: false
