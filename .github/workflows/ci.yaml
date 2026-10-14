@@ -97,6 +97,7 @@ jobs:
   packages_testsuite:
     name: "Packaging clash-testsuite (${{ matrix.ghc }}\
            ${{ case(matrix.variant == '', '', ' ') }}${{ matrix.variant }})"
+    runs-on: ubuntu-latest
     strategy:
       # If caching fails for one package, then we are still interested in caching other packages
       fail-fast: false
