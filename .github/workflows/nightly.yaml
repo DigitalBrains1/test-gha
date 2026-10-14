@@ -2,22 +2,8 @@ name: Nightly
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 1 * * *"
-      timezone: "Europe/Amsterdam"
 
 jobs:
-  schedule:
-    name: Trigger from schedule
-    if: github.event_name == 'schedule'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh workflow run .github/workflows/nightly.yaml
-          gh workflow run .github/workflows/nightly.yaml --ref 1.0
   ci-recipe:
     name: Construct CI recipe
     runs-on: ubuntu-latest
