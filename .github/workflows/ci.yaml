@@ -12,52 +12,52 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  cabal:
-    name: Cabal compilation test
-    runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJSON(inputs.recipe).cabal.matrix }}
-    steps:
-      - run: |
-          echo This is the workflow file on main
-          echo "GITHUB_REF = $GITHUB_REF"
-          echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
-          echo
-          python3 -m json.tool $GITHUB_EVENT_PATH
-          export
+  # cabal:
+  #   name: Cabal compilation test
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix: ${{ fromJSON(inputs.recipe).cabal.matrix }}
+  #   steps:
+  #     - run: |
+  #         echo This is the workflow file on main
+  #         echo "GITHUB_REF = $GITHUB_REF"
+  #         echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
+  #         echo
+  #         python3 -m json.tool $GITHUB_EVENT_PATH
+  #         export
 
 
-  packages_common:
-    name: "Build Common (${{ matrix.ghc }}\
-           ${{ case(matrix.variant == '', '', ' ') }}${{ matrix.variant }})"
-    runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJSON(inputs.recipe).packages_common.matrix }}
-    steps:
-      - run: |
-          echo This is the workflow file on main
-          echo "GITHUB_REF = $GITHUB_REF"
-          echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
-          echo
-          python3 -m json.tool $GITHUB_EVENT_PATH
-          export
+  # packages_common:
+  #   name: "Build Common (${{ matrix.ghc }}\
+  #          ${{ case(matrix.variant == '', '', ' ') }}${{ matrix.variant }})"
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix: ${{ fromJSON(inputs.recipe).packages_common.matrix }}
+  #   steps:
+  #     - run: |
+  #         echo This is the workflow file on main
+  #         echo "GITHUB_REF = $GITHUB_REF"
+  #         echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
+  #         echo
+  #         python3 -m json.tool $GITHUB_EVENT_PATH
+  #         export
 
 
-  packages_other:
-    name: "Build Other (${{matrix.ghc}}, ${{matrix.package}}\
-           ${{ case(matrix.variant == '', '', ' ') }}${{ matrix.variant }})"
-    needs: packages_common
-    runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJSON(inputs.recipe).packages_other.matrix }}
-    steps:
-      - run: |
-          echo This is the workflow file on main
-          echo "GITHUB_REF = $GITHUB_REF"
-          echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
-          echo
-          python3 -m json.tool $GITHUB_EVENT_PATH
-          export
+  # packages_other:
+  #   name: "Build Other (${{matrix.ghc}}, ${{matrix.package}}\
+  #          ${{ case(matrix.variant == '', '', ' ') }}${{ matrix.variant }})"
+  #   needs: packages_common
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix: ${{ fromJSON(inputs.recipe).packages_other.matrix }}
+  #   steps:
+  #     - run: |
+  #         echo This is the workflow file on main
+  #         echo "GITHUB_REF = $GITHUB_REF"
+  #         echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
+  #         echo
+  #         python3 -m json.tool $GITHUB_EVENT_PATH
+  #         export
 
 
 #  developer_shells:
@@ -94,41 +94,22 @@ jobs:
 #          CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_SECRET }}
 #        run: nix path-info .#devShells.x86_64-linux.${{matrix.ghc}} | cachix push clash-lang
 #
-#  packages_testsuite:
-#    name: Packaging clash-testsuite (${{matrix.packageSet}})
-#    runs-on: self-hosted
-#    strategy:
-#      # If caching fails for one package, then we are still interested in caching other packages
-#      fail-fast: false
-#      matrix:
-#        # See 'packages_common'
-#        packageSet: [
-#          clashPackages-ghc9141,
-#          clashPackages-ghc9124,
-#          clashPackages-ghc9103,
-#          clashPackages-ghc967,
-#          clashPackagesUpperBounds-ghc9141
-#        ]
-#    steps:
-#      - uses: actions/checkout@v6
-#
-#      - name: Authenticate cache
-#        env:
-#          ATTIC_AUTH_TOKEN: ${{ secrets.ATTIC_SECRET }}
-#        run: .ci/attic-auth.sh
-#
-#      - name: Build clash-testsuite
-#        run: |
-#          nix build -L .#${{matrix.packageSet}}.clash-testsuite-debug
-#          attic push public $(nix path-info .#${{matrix.packageSet}}.clash-testsuite-debug)
-#
-#      - name: Cachix
-#        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/1.10'
-#        env:
-#          CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_SECRET }}
-#        run: |
-#          nix path-info .#${{matrix.packageSet}}.clash-testsuite-debug | cachix push clash-lang
-#
+  packages_testsuite:
+    name: Packaging clash-testsuite (${{matrix.packageSet}})
+    runs-on: self-hosted
+    strategy:
+      # If caching fails for one package, then we are still interested in caching other packages
+      fail-fast: false
+      matrix: ${{ fromJSON(inputs.recipe).packages_testsuite.matrix }}
+    steps:
+      - run: |
+          echo This is the workflow file on main
+          echo "GITHUB_REF = $GITHUB_REF"
+          echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
+          echo
+          python3 -m json.tool $GITHUB_EVENT_PATH
+          export
+
 #  running_testsuite:
 #    name: Running clash-testsuite (${{matrix.packageSet}}, ${{matrix.hdl}})
 #    runs-on: self-hosted

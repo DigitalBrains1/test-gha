@@ -68,10 +68,10 @@ def combine(x, y):
 
 
 base_nix_ghcs = [
-    "9141",
-    #    "9124",
-    #    "9103",
-    #    "967",
+    # "9141",
+    # "9124",
+    # "9103",
+    # "967",
 ]
 
 nightly_nix_ghcs = ["984"]
@@ -85,11 +85,11 @@ upper_bounds = {
 
 other_packages = [
     "clash-benchmark",
-    #    "clash-lib-hedgehog",
-    #    "clash-prelude-hedgehog",
-    #    "clash-profiling",
-    #    "clash-profiling-prepare",
-    #    "clash-term",
+    # "clash-lib-hedgehog",
+    # "clash-prelude-hedgehog",
+    # "clash-profiling",
+    # "clash-profiling-prepare",
+    # "clash-term",
 ]
 
 recipes = {
