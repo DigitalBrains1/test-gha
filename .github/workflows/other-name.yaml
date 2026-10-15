@@ -1,7 +1,7 @@
 name: On push
 
 on:
-#  push:
+  push:
 #    branches:
 #      - main
 #      - "1.0"
@@ -10,7 +10,7 @@ on:
 jobs:
   ci-recipe:
     name: Construct CI recipe
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       recipe: ${{ steps.ci-recipe.outputs.recipe }}
     steps:
@@ -24,7 +24,7 @@ jobs:
   ci:
     name: CI
     needs: ci-recipe
-    uses: $/.github/workflows/ci.yaml
+    uses: $/.github/workflows/other-name2.yaml
     with:
       recipe: ${{ needs.ci-recipe.outputs.recipe }}
     secrets: inherit
