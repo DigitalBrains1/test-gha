@@ -11,7 +11,7 @@ jobs:
     name: Trigger from schedule
     permissions:
       actions: write
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v6
       - env:

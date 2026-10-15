@@ -10,7 +10,7 @@ on:
 jobs:
   ci-recipe:
     name: Construct CI recipe
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       recipe: ${{ steps.ci-recipe.outputs.recipe }}
     steps:

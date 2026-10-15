@@ -14,7 +14,7 @@ concurrency:
 jobs:
   # cabal:
   #   name: Cabal compilation test
-  #   runs-on: ubuntu-latest
+  #   runs-on: ubuntu-slim
   #   strategy:
   #     matrix: ${{ fromJSON(inputs.recipe).cabal.matrix }}
   #   steps:
@@ -30,7 +30,7 @@ jobs:
   # packages_common:
   #   name: "Build Common (${{ matrix.ghc }}\
   #          ${{ case(matrix.variant == '', '', ' ') }}${{ matrix.variant }})"
-  #   runs-on: ubuntu-latest
+  #   runs-on: ubuntu-slim
   #   strategy:
   #     matrix: ${{ fromJSON(inputs.recipe).packages_common.matrix }}
   #   steps:
@@ -47,7 +47,7 @@ jobs:
   #   name: "Build Other (${{matrix.ghc}}, ${{matrix.package}}\
   #          ${{ case(matrix.variant == '', '', ' ') }}${{ matrix.variant }})"
   #   needs: packages_common
-  #   runs-on: ubuntu-latest
+  #   runs-on: ubuntu-slim
   #   strategy:
   #     matrix: ${{ fromJSON(inputs.recipe).packages_other.matrix }}
   #   steps:
@@ -97,7 +97,7 @@ jobs:
   packages_testsuite:
     name: "Packaging clash-testsuite (${{ matrix.ghc }}\
            ${{ case(matrix.variant == '', '', ' ') }}${{ matrix.variant }})"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     strategy:
       # If caching fails for one package, then we are still interested in caching other packages
       fail-fast: false

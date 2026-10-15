@@ -6,7 +6,7 @@ on:
 jobs:
   ci-recipe:
     name: Construct CI recipe
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       recipe: ${{ steps.ci-recipe.outputs.recipe }}
     steps:
@@ -29,7 +29,7 @@ jobs:
 
   qlog_entries:
     name: "Check qlog entries"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - run: |
           echo This is the workflow file on main
