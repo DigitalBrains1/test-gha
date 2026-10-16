@@ -27,4 +27,5 @@ jobs:
     uses: $/.github/workflows/ci.yaml
     with:
       recipe: ${{ needs.ci_recipe.outputs.recipe }}
+      hackage_publish: "no"
     secrets: inherit
