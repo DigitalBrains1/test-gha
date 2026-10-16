@@ -100,12 +100,12 @@ all_nix_ghcs = base_nix_ghcs + nightly_nix_ghcs
 # If something isn't needed, just comment it out so it can be easily reinstated with
 # different parameters later.
 nix_also = [
-    {
-        # "UpperBounds" variants are built against the newest versions of
-        # some of our dependencies, see 'nix/overlay-upper-bounds.nix'.
-        "ghc": "9141",
-        "variant": "UpperBounds",
-    },
+#    {
+#        # "UpperBounds" variants are built against the newest versions of
+#        # some of our dependencies, see 'nix/overlay-upper-bounds.nix'.
+#        "ghc": "9141",
+#        "variant": "UpperBounds",
+#    },
 ]
 
 other_packages = [
