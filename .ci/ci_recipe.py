@@ -4,18 +4,19 @@ Produce CI recipes for things where GitHub isn't quite flexible enough or where 
 repeating the same data.
 
 For things that are easily expressed in the GitHub workflow YAML syntax, that is usually
-a better fit even with this ci-recipe mechanism in place. But we want to be able to vary
-strategy matrices based on parameters, and we don't want to keep typing GHC version
-numbers for every job strategy matrix, duplicating the same datum in a lot of places.
-For those cases, we can define in this script recipes that specifies data to pass to
-job configurations. The script is invoked with a parameter describing the flavor of CI
-we want to run, and it combines recipes to create the desired flavor. If needed, more
+a better fit even with this ci_recipe mechanism in place. But we want to be able to vary
+job configuration matrices based on parameters, and we don't want to keep typing GHC
+version numbers for every matrix, duplicating the same datum in a lot of places. For
+those cases, as well as other things that are hard to express in the GitHub workflow
+YAML, we can define in this script recipes that specify data to pass to job
+configurations. The script is invoked with a parameter describing the flavor of CI we
+want to run, and it combines recipes to create the desired flavor. If needed, more
 ad-hoc processing could be added for certain flavors.
 
 All the list parts of the JSON recipe are sorted lexicographically and duplicates are
-removed if they happen to occur. This matches how lists in workflow YAML are usually
-used, where duplicates don't make sense. The sorting makes it easy to compare two jobs
-in the JSON output.
+removed if they happen to occur; basically they are treated like unordered sets. This
+matches how lists in workflow YAML are usually used, where duplicates don't make sense.
+The sorting makes it easy to compare two jobs in the JSON output.
 """
 
 import json
@@ -96,12 +97,16 @@ nightly_nix_ghcs = ["984"]
 
 all_nix_ghcs = base_nix_ghcs + nightly_nix_ghcs
 
-# "UpperBounds" variants are built against the newest versions of
-# some of our dependencies, see 'nix/overlay-upper-bounds.nix'.
-upper_bounds = {
-    "ghc": "9141",
-    "variant": "UpperBounds",
-}
+# If something isn't needed, just comment it out so it can be easily reinstated with
+# different parameters later.
+nix_also = [
+    {
+        # "UpperBounds" variants are built against the newest versions of
+        # some of our dependencies, see 'nix/overlay-upper-bounds.nix'.
+        "ghc": "9141",
+        "variant": "UpperBounds",
+    },
+]
 
 other_packages = [
     "clash-benchmark",
@@ -137,9 +142,7 @@ recipes0 = {
             "matrix": {
                 "ghc": all_nix_ghcs,
                 "variant": [""],
-                "include": [
-                    upper_bounds,
-                ],
+                "include": nix_also,
             },
         },
         "packages_other": {
@@ -148,7 +151,9 @@ recipes0 = {
                 "ghc": all_nix_ghcs,
                 "variant": [""],
                 "include": [
-                    upper_bounds | {"package": package} for package in other_packages
+                    inc | {"package": package}
+                    for package in other_packages
+                    for inc in nix_also
                 ],
             },
         },
@@ -161,9 +166,7 @@ recipes0 = {
             "matrix": {
                 "ghc": base_nix_ghcs,
                 "variant": [""],
-                "include": [
-                    upper_bounds,
-                ],
+                "include": nix_also,
             },
         },
         "running_testsuite": {
@@ -171,7 +174,12 @@ recipes0 = {
                 "ghc": base_nix_ghcs,
                 "hdl": hdls,
                 "variant": [""],
-                "include": [upper_bounds | {"hdl": hdl} for hdl in hdls],
+                "include": [inc | {"hdl": hdl} for hdl in hdls for inc in nix_also],
+            },
+        },
+        "running_nightly_testsuite": {
+            "matrix": {
+                "ghc": [],
             },
         },
     },
@@ -185,9 +193,7 @@ recipes0 = {
         "packages_testsuite": {
             "matrix": {
                 "ghc": nightly_nix_ghcs,
-                "include": [
-                    upper_bounds,
-                ],
+                "include": nix_also,
             },
         },
         "running_testsuite": {
@@ -200,7 +206,9 @@ recipes0 = {
                 "ghc": all_nix_ghcs,
                 "hdl": vivado_hdls,
                 "variant": [""],
-                "include": [upper_bounds | {"hdl": hdl} for hdl in vivado_hdls],
+                "include": [
+                    inc | {"hdl": hdl} for hdl in vivado_hdls for inc in nix_also
+                ],
             },
         },
     },

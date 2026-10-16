@@ -6,25 +6,33 @@ on:
       recipe:
         required: true
         type: string
+      hackage_publish:
+        # Valid values:
+        #   - "no": Don't build and upload sdists
+        #   - "candidate": Upload as candidate
+        #   - "release": Upload and publish the package
+        required: true
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # cabal:
-  #   name: Cabal compilation test
-  #   runs-on: ubuntu-slim
-  #   strategy:
-  #     matrix: ${{ fromJSON(inputs.recipe).cabal.matrix }}
-  #   steps:
-  #     - run: |
-  #         echo This is the workflow file on main
-  #         echo "GITHUB_REF = $GITHUB_REF"
-  #         echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
-  #         echo
-  #         python3 -m json.tool $GITHUB_EVENT_PATH
-  #         export
+  cabal:
+    name: Cabal compilation test
+    runs-on: ubuntu-slim
+    strategy:
+      matrix:
+        ghc: []
+    steps:
+      - run: |
+          echo This is the workflow file on main
+          echo "GITHUB_REF = $GITHUB_REF"
+          echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
+          echo
+          python3 -m json.tool $GITHUB_EVENT_PATH
+          export
 
 
   # packages_common:
@@ -94,14 +102,14 @@ jobs:
 #          CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_SECRET }}
 #        run: nix path-info .#devShells.x86_64-linux.${{matrix.ghc}} | cachix push clash-lang
 #
-  packages_testsuite:
-    name: "Packaging clash-testsuite (${{ matrix.ghc }}\
-           ${{ case(matrix.variant == '', '', ' ') }}${{ matrix.variant }})"
+  running_nightly_testsuite:
+    name: "Running nightly clash-testsuite (${{ matrix.ghc }}\
+           ${{ case(matrix.variant == '', '', ' ') }}${{ matrix.variant }}, ${{ matrix.hdl }})"
+    if: inputs.nightly
     runs-on: ubuntu-slim
     strategy:
-      # If caching fails for one package, then we are still interested in caching other packages
       fail-fast: false
-      matrix: ${{ fromJSON(inputs.recipe).packages_testsuite.matrix }}
+      matrix: ${{ fromJSON(inputs.recipe).running_nightly_testsuite.matrix }}
     steps:
       - run: |
           echo This is the workflow file on main

@@ -8,23 +8,23 @@ on:
   workflow_dispatch:
 
 jobs:
-  ci-recipe:
+  ci_recipe:
     name: Construct CI recipe
     runs-on: ubuntu-slim
     outputs:
-      recipe: ${{ steps.ci-recipe.outputs.recipe }}
+      recipe: ${{ steps.ci_recipe.outputs.recipe }}
     steps:
       - uses: actions/checkout@v6
 
-      - id: ci-recipe
+      - id: ci_recipe
         run:
-          .ci/ci-recipe.py pr
+          .ci/ci_recipe.py pr
 
 
   ci:
     name: CI
-    needs: ci-recipe
+    needs: ci_recipe
     uses: $/.github/workflows/ci.yaml
     with:
-      recipe: ${{ needs.ci-recipe.outputs.recipe }}
+      recipe: ${{ needs.ci_recipe.outputs.recipe }}
     secrets: inherit

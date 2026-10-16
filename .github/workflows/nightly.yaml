@@ -2,25 +2,31 @@ name: Nightly
 
 on:
   workflow_dispatch:
+    inputs:
+      hackage_publish:
+        description: Should we upload to Hackage?
+        required: true
+        default: "no"
+        type: choice
+        options: ["no", "candidate", "release"]
 
 jobs:
-  ci-recipe:
+  ci_recipe:
     name: Construct CI recipe
     runs-on: ubuntu-slim
     outputs:
-      recipe: ${{ steps.ci-recipe.outputs.recipe }}
+      recipe: ${{ steps.ci_recipe.outputs.recipe }}
     steps:
       - uses: actions/checkout@v6
 
-      - id: ci-recipe
+      - id: ci_recipe
         run:
           .ci/ci-recipe.py nightly
 
   ci:
     name: CI
-    needs: ci-recipe
-    # uses: DigitalBrains1/test-gha/.github/workflows/ci.yaml@${{ github.head_ref }}
+    needs: ci_recipe
     uses: $/.github/workflows/ci.yaml
     with:
-      recipe: ${{ needs.ci-recipe.outputs.recipe }}
-    secrets: inherit
+      recipe: ${{ needs.ci_recipe.outputs.recipe }}
+      hackage_publish: ${{ inputs.hackage_publish }}
