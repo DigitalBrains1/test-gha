@@ -21,7 +21,7 @@ jobs:
 
       - id: ci_recipe
         run:
-          .ci/ci-recipe.py nightly
+          .ci/ci_recipe.py nightly
 
   ci:
     name: CI
