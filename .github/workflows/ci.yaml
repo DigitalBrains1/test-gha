@@ -19,20 +19,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  cabal:
-    name: Cabal compilation test
-    runs-on: ubuntu-slim
-    strategy:
-      matrix:
-        ghc: []
-    steps:
-      - run: |
-          echo This is the workflow file on main
-          echo "GITHUB_REF = $GITHUB_REF"
-          echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
-          echo
-          python3 -m json.tool $GITHUB_EVENT_PATH
-          export
+  # cabal:
+  #   name: Cabal compilation test
+  #   runs-on: ubuntu-slim
+  #   strategy:
+  #     matrix:
+  #       ghc: []
+  #   steps:
+  #     - run: |
+  #         echo This is the workflow file on main
+  #         echo "GITHUB_REF = $GITHUB_REF"
+  #         echo "GITHUB_WORKFLOW_REF = $GITHUB_WORKFLOW_REF"
+  #         echo
+  #         python3 -m json.tool $GITHUB_EVENT_PATH
+  #         export
 
 
   # packages_common:
@@ -105,7 +105,7 @@ jobs:
   running_nightly_testsuite:
     name: "Running nightly clash-testsuite (${{ matrix.ghc }}\
            ${{ case(matrix.variant == '', '', ' ') }}${{ matrix.variant }}, ${{ matrix.hdl }})"
-    if: inputs.nightly
+    if: fromJSON(inputs.recipe).running_nightly_testsuite
     runs-on: ubuntu-slim
     strategy:
       fail-fast: false

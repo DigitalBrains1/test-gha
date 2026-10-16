@@ -177,11 +177,6 @@ recipes0 = {
                 "include": [inc | {"hdl": hdl} for hdl in hdls for inc in nix_also],
             },
         },
-        "running_nightly_testsuite": {
-            "matrix": {
-                "ghc": [],
-            },
-        },
     },
     # These will run in nightlies but not in PR's
     "nightly": {
