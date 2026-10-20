@@ -3,6 +3,7 @@ on:
 
 jobs:
   dump:
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-slim
     steps:
       - env:
