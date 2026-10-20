@@ -10,6 +10,8 @@ jobs:
           JOB: ${{ toJSON(job) }}
           RUNNER: ${{ toJSON(runner) }}
         run: |
+          echo workflow from some-branch
+          echo
           echo "-------------- github -------------"
           python3 -m json.tool - <<<$GITHUB
           echo "--------------- job ---------------"
