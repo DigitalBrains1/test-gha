@@ -3,9 +3,16 @@ name: CI
 on:
   workflow_call:
     inputs:
-      recipe:
+      flavor:
+        # See .ci/ci_recipe.py
         required: true
         type: string
+      nightly:
+        required: true
+        type: boolean
+      mac_windows:
+        required: true
+        type: boolean
       hackage_publish:
         # Valid values:
         #   - "no": Don't build and upload sdists
@@ -19,6 +26,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  ci_recipe:
+    name: Construct CI recipe
+    runs-on: ubuntu-slim
+    outputs:
+      recipe: ${{ steps.ci_recipe.outputs.recipe }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - id: ci_recipe
+        run:
+          .ci/ci_recipe.py ${{ inputs.flavor }}
   # cabal:
   #   name: Cabal compilation test
   #   runs-on: ubuntu-slim
@@ -103,13 +121,17 @@ jobs:
 #        run: nix path-info .#devShells.x86_64-linux.${{matrix.ghc}} | cachix push clash-lang
 #
   running_nightly_testsuite:
+    # Name is affected by:
+    #   job.name expression not evaluated when job skipped
+    #   https://github.com/orgs/community/discussions/13261
     name: "Running nightly clash-testsuite (${{ matrix.ghc }}\
            ${{ case(matrix.variant == '', '', ' ') }}${{ matrix.variant }}, ${{ matrix.hdl }})"
-    if: fromJSON(inputs.recipe).running_nightly_testsuite
-    runs-on: ubuntu-slim
+    if: fromJSON(needs.ci_recipe.outputs.recipe).running_nightly_testsuite
+    needs: ci_recipe
+    runs-on: self-hosted
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(inputs.recipe).running_nightly_testsuite.matrix }}
+      matrix: ${{ fromJSON(needs.ci_recipe.outputs.recipe).running_nightly_testsuite.matrix }}
     steps:
       - run: |
           echo This is the workflow file on main
