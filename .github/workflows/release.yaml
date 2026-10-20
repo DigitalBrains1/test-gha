@@ -2,22 +2,10 @@ on:
   create
 
 jobs:
-  dump:
+  ci:
+    name: CI
     if: github.ref_type == 'tag'
-    runs-on: ubuntu-slim
-    steps:
-      - env:
-          GITHUB: ${{ toJSON(github) }}
-          JOB: ${{ toJSON(job) }}
-          RUNNER: ${{ toJSON(runner) }}
-        run: |
-          echo workflow from some-branch
-          echo
-          echo "-------------- github -------------"
-          python3 -m json.tool - <<<$GITHUB
-          echo "--------------- job ---------------"
-          python3 -m json.tool - <<<$JOB
-          echo "-------------- runner -------------"
-          python3 -m json.tool - <<<$RUNNER
-          echo
-          export
+    uses: $/.github/workflows/ci.yaml
+    with:
+      recipe: ""
+      hackage_publish: no
