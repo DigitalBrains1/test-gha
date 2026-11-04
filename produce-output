@@ -15,3 +15,5 @@ foo
 bar
 DELIM
 EOF
+
+echo "::add-mask::foo"
