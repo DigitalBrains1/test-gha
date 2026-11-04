@@ -9,8 +9,11 @@ on:
 
 jobs:
   multiline-output:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     steps:
+      - run: |
+          apt-get update
+          apt-get install -y bsdextrautils
       - uses: actions/checkout@v6
       - run: ./produce-output
         id: out
