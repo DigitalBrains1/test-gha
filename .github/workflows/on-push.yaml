@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          apt-get update
-          apt-get install -y bsdextrautils
+          sudo apt-get update
+          sudo apt-get install -y bsdextrautils
       - uses: actions/checkout@v6
       - run: ./produce-output
         id: out
