@@ -1,0 +1,17 @@
+#!/bin/bash
+
+cat >"$GITHUB_OUTPUT" <<EOF
+A=foo
+B<<DELIM
+foo
+DELIM
+C<<DELIM
+foo
+
+DELIM
+D<<DELIM
+foo
+
+bar
+DELIM
+EOF

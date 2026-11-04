@@ -8,24 +8,32 @@ on:
   workflow_dispatch:
 
 jobs:
-  ci_recipe:
-    name: Construct CI recipe
+  multiline-output:
     runs-on: ubuntu-slim
-    outputs:
-      recipe: ${{ steps.ci_recipe.outputs.recipe }}
     steps:
       - uses: actions/checkout@v6
-
-      - id: ci_recipe
-        run:
-          .ci/ci_recipe.py nightly
-
-
-  ci:
-    name: CI
-    needs: ci_recipe
-    uses: $/.github/workflows/ci.yaml
-    with:
-      recipe: ${{ needs.ci_recipe.outputs.recipe }}
-      hackage_publish: "no"
-    secrets: inherit
+      - run: ./produce-output
+        id: out
+      - env:
+          A: ${{ steps.out.outputs.A }}
+          B: ${{ steps.out.outputs.B }}
+          C: ${{ steps.out.outputs.C }}
+          D: ${{ steps.out.outputs.D }}
+        run: |
+          set -x
+          echo \""$A"\"
+          hd <<<$A
+          echo \""$B"\"
+          hd <<<$B
+          echo \""$C"\"
+          hd <<<$C
+          echo \""$D"\"
+          hd <<<$D
+          echo \""${{ steps.out.outputs.A }}"\"
+          hd <<<"${{ steps.out.outputs.A }}"
+          echo \""${{ steps.out.outputs.B }}"\"
+          hd <<<"${{ steps.out.outputs.B }}"
+          echo \""${{ steps.out.outputs.C }}"\"
+          hd <<<"${{ steps.out.outputs.C }}"
+          echo \""${{ steps.out.outputs.D }}"\"
+          hd <<<"${{ steps.out.outputs.D }}"
